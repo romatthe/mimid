@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/HouzuoGuo/tiedot/db"
 	"github.com/julienschmidt/httprouter"
 	"io/ioutil"
@@ -23,11 +22,6 @@ func handlerUpload(config Config, db *db.DB, uploads chan<- FileUpload) httprout
 			http.Error(w, err.Error(), http.StatusForbidden)
 		}
 
-		for key, value := range r.MultipartForm.Value {
-			fmt.Fprintf(w, "%s:%s ", key, value)
-			log.Printf("%s:%s", key, value)
-		}
-
 		// We want to enumerate all files and put them on a channel for workers to be picked up
 		for _, fileHeaders := range r.MultipartForm.File {
 			for _, fileHeader := range fileHeaders {
@@ -44,6 +38,5 @@ func handlerUpload(config Config, db *db.DB, uploads chan<- FileUpload) httprout
 				uploads <- upload
 			}
 		}
-		w.WriteHeader(http.StatusAccepted)
 	})
 }

@@ -23,6 +23,8 @@ func main() {
 		go WorkerMusicUpload(config, db, fileUploads, fileUploadResults)
 	}
 
+	go WorkerMusicUploadResult(config, db, fileUploadResults)
+
 	// Create a new httprouter
 	router := httprouter.New()
 
@@ -50,6 +52,8 @@ func Startup() (Config, *db.DB) {
 	baseDir := path.Join(usr.HomeDir, ".mimid")
 	config := Config{BaseConfigDir: baseDir, BaseMusicDir: path.Join(baseDir, "music"), BaseDBDir: path.Join(baseDir, "mimid.db")}
 
+	// TODO: Dev stuff, cleaning all files, remove this later
+	_ = os.RemoveAll(config.BaseMusicDir)
 	// Base config dir & Base music dir
 	if err := os.MkdirAll(config.BaseConfigDir, 0766); err != nil {
 		panic(err.Error())

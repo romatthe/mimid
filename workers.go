@@ -1,8 +1,7 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
+	"fmt"
 	"github.com/HouzuoGuo/tiedot/db"
 	"io/ioutil"
 	"os"
@@ -21,18 +20,21 @@ type FileUploadResult struct {
 	UploadID string
 }
 
-// HashFileName takes a string containing a filename and hashes it to uniquely identify it
-// This is the name + extension only, no path
-func HashFileName(fileName string) string {
-	data := md5.Sum([]byte(fileName))
-	return hex.EncodeToString(data[:])
-}
-
 // WorkerMusicUpload is a worker function called in order to process and organize new music files being uploaded
 func WorkerMusicUpload(config Config, db *db.DB, uploads <-chan FileUpload, results chan<- FileUploadResult) {
 	for upload := range uploads {
 		filePath := path.Join(config.BaseMusicDir, upload.FileName)
 		ioutil.WriteFile(filePath, upload.FileBuf, os.ModePerm)
+
+		fmt.Printf("%+v\n", ParseMetaData(upload.UploadID, upload.FileBuf))
+
 		results <- FileUploadResult{UploadID: upload.UploadID}
+	}
+}
+
+// WorkerMusicUploadResult is a worker function for handling the results on
+func WorkerMusicUploadResult(config Config, db *db.DB, uploadResults <-chan FileUploadResult) {
+	for result := range uploadResults {
+		fmt.Println(result.UploadID)
 	}
 }
