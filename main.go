@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/HouzuoGuo/tiedot/db"
-	//"github.com/HouzuoGuo/tiedot/dberr"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"os"
@@ -15,14 +14,24 @@ func main() {
 	// Bootstrap the application and configure the dependencies
 	config, db := Startup()
 
+	// Set up the channels on which to perform work
+	fileUploads := make(chan FileUpload, 100)
+	fileUploadResults := make(chan FileUploadResult, 100)
+
+	// Create a bunch of nice workers for the fileUploads channel
+	for w := 0; w <= 50; w++ {
+		go WorkerMusicUpload(config, db, fileUploads, fileUploadResults)
+	}
+
 	// Create a new httprouter
 	router := httprouter.New()
 
-	// Available routes
+	// Home and Static files
 	router.GET("/", handlerHome(config, db))
+	router.ServeFiles("/static/*filepath", http.Dir("static"))
 
 	// Upload experiment
-	router.POST("/upload", handlerUpload(config, db))
+	router.POST("/upload", handlerUpload(config, db, fileUploads))
 
 	// Stars HTTP Server and wire up the router
 	http.ListenAndServe(":8080", router)
