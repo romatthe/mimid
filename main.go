@@ -19,6 +19,7 @@ func main() {
 	fileUploadResults := make(chan FileUploadResult, 100)
 
 	// Create a bunch of nice workers for the fileUploads channel
+	// TODO: Fetch the amount of workers from Config?
 	for w := 0; w <= 50; w++ {
 		go WorkerMusicUpload(config, db, fileUploads, fileUploadResults)
 	}
