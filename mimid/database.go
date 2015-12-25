@@ -1,4 +1,4 @@
-package main
+package mimid
 
 import (
 	"github.com/HouzuoGuo/tiedot/db"
@@ -27,10 +27,4 @@ func NewApplicationDatabase(config Config) *ApplicationDatabase {
 	}
 
 	return &ApplicationDatabase{DB: db}
-}
-
-// GetSongs retrieves all songs in the collection
-func (db *ApplicationDatabase) GetSongs() []Track {
-	// TODO
-	return
 }

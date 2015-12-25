@@ -1,4 +1,4 @@
-package main
+package mimid
 
 import (
 	"github.com/HouzuoGuo/tiedot/db"
@@ -8,14 +8,15 @@ import (
 	"net/http"
 )
 
-func handlerHome(config Config, db *db.DB) httprouter.Handle {
+// HandlerHome returns an httprouter.Handle to serve the main index.html
+func HandlerHome(config Config, db *db.DB) httprouter.Handle {
 	return httprouter.Handle(func(w http.ResponseWriter, r *http.Request, param httprouter.Params) {
 		http.ServeFile(w, r, "index.html")
 	})
 }
 
-// This is where the upload action happens.
-func handlerUpload(config Config, db *db.DB, uploads chan<- FileUpload) httprouter.Handle {
+// HandlerUpload returns an httrouter.Handle to manage the MultipartForm file upload
+func HandlerUpload(config Config, db *db.DB, uploads chan<- FileUpload) httprouter.Handle {
 	return httprouter.Handle(func(w http.ResponseWriter, r *http.Request, param httprouter.Params) {
 		if err := r.ParseMultipartForm(1 * 1024 * 1024); err != nil {
 			log.Println(err)
@@ -38,5 +39,7 @@ func handlerUpload(config Config, db *db.DB, uploads chan<- FileUpload) httprout
 				uploads <- upload
 			}
 		}
+
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

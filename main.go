@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/HouzuoGuo/tiedot/db"
 	"github.com/julienschmidt/httprouter"
+	. "github.com/romatthe/mimid/mimid"
 	"net/http"
 	"os"
 	"os/user"
@@ -30,11 +31,11 @@ func main() {
 	router := httprouter.New()
 
 	// Home and Static files
-	router.GET("/", handlerHome(config, db))
+	router.GET("/", HandlerHome(config, db))
 	router.ServeFiles("/static/*filepath", http.Dir("static"))
 
 	// Upload experiment
-	router.POST("/upload", handlerUpload(config, db, fileUploads))
+	router.POST("/upload", HandlerUpload(config, db, fileUploads))
 
 	// Stars HTTP Server and wire up the router
 	http.ListenAndServe(":8080", router)

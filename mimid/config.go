@@ -1,4 +1,4 @@
-package main
+package mimid
 
 // Config represents the base Configuration of Mimid
 type Config struct {
